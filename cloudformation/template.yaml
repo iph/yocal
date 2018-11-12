@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  ProjectId:
+    Description: AWS CodeStar projectID used to associate new resources to team members
+    Type: String
+Resources:
+  GetHelloWorld:
+    Properties:
+      CodeUri: s3://aws-codestar-us-east-2-326750834372-yocal-pipe/6cf6ffc51aeaf5ae35433a22237d27c9
+      Events:
+        GetEvent:
+          Properties:
+            Method: get
+            Path: /
+          Type: Api
+      Handler: main
+      Role:
+        Fn::ImportValue:
+          Fn::Join:
+          - '-'
+          - - Ref: ProjectId
+            - Ref: AWS::Region
+            - LambdaTrustRole
+      Runtime: go1.x
+    Type: AWS::Serverless::Function
+Transform:
+- AWS::Serverless-2016-10-31
+- AWS::CodeStar

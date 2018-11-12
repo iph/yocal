@@ -4,12 +4,15 @@ Parameters:
   SourceRepo:
     Description: Enter the name of CodeCommit source repository
     Type: String
+    Default: 'yocal'
   ApprovalTopic:
     Description: Enter the name of the SNS topic to which approval notification should be sent
     Type: String
+    Default: 'topic'
   ProductionBucket:
     Description: Enter the name of the production S3 bucket
     Type: String
+    Default: 'sean-myers-cmh'
 
 Resources:
   TestWebsite:
