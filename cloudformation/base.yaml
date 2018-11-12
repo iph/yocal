@@ -21,16 +21,9 @@ Parameters:
     MinLength: 1
     MaxLength: 100
 Metadata:
-  CodeBuildImage: 'aws/codebuild/golang:1.7.3'
-  CodeBuildImageOverride: 'aws/codebuild/golang:1.7.3'
+  CodeBuildImage: 'aws/codebuild/golang:1.10'
+  CodeBuildImageOverride: 'aws/codebuild/golang:1.10'
   IsWebsite: true
-  ProjectTemplateId: webapp-goweb-lambda
-  'AWS::CloudFormation::Interface':
-    ParameterGroups:
-      - Parameters:
-          - ProjectId
-        Label:
-          default: Application
   WebsiteS3Bucket: !Ref WebsiteS3Bucket
 Outputs:
   LambdaTrustRole:
@@ -293,14 +286,6 @@ Resources:
               Service:
                 - codepipeline.amazonaws.com
             Sid: 1
-  SyncInitialResources:
-    DependsOn:
-      - SeedRepo
-    Type: 'AWS::CodeStar::SyncResources'
-    Description: Adding the AWS CodeCommit repository to your AWS CodeStar project.
-    Version: 1
-    Properties:
-      ProjectId: !Ref ProjectId
   CodeBuildProject:
     Condition: CreateCodeBuildResources
     DependsOn:
@@ -343,67 +328,7 @@ Resources:
     Description: Creating AWS CodeCommit repository for application source code
     Properties:
       RepositoryName: !Ref RepositoryName
-      RepositoryDescription: !Join 
-        - ''
-        - - !Ref ProjectId
-          - ' project repository'
-  EnvironmentEC2972b112d5d0d11e8961bcb4815453823:
-    Type: 'AWS::Cloud9::EnvironmentEC2'
-    Properties:
-      Repositories:
-        - PathComponent: /yocal
-          RepositoryUrl: 'https://git-codecommit.us-east-2.amazonaws.com/v1/repos/yocal'
-      OwnerArn: 'arn:aws:sts::326750834372:assumed-role/Administrator/seamyers-Isengard'
-      Description: Created from CodeStar.
-      AutomaticStopTimeMinutes: '30'
-      SubnetId: subnet-76c5de0e
-      InstanceType: t2.small
-      Name: yocal
-  SourceEvent:
-    Type: 'AWS::Events::Rule'
-    Properties:
-      EventPattern:
-        detail-type:
-          - CodeCommit Repository State Change
-        resources:
-          - !GetAtt 
-            - CodeCommitRepo
-            - Arn
-        detail:
-          referenceType:
-            - branch
-          event:
-            - referenceCreated
-            - referenceUpdated
-          referenceName:
-            - master
-        source:
-          - aws.codecommit
-      Description: >-
-        Rule for Amazon CloudWatch Events to detect changes to the source
-        repository and trigger pipeline execution
-      State: ENABLED
-      Targets:
-        - Id: ProjectPipelineTarget
-          Arn: !Join 
-            - ':'
-            - - arn
-              - aws
-              - codepipeline
-              - !Ref 'AWS::Region'
-              - !Ref 'AWS::AccountId'
-              - !Join 
-                - '-'
-                - - !Ref ProjectId
-                  - Pipeline
-          RoleArn: !GetAtt 
-            - SourceEventRole
-            - Arn
-      Name: !Join 
-        - '-'
-        - - awscodestar
-          - !Ref ProjectId
-          - SourceEvent
+      RepositoryDescription: blah blah blah
   CloudFormationTrustRole:
     Type: 'AWS::IAM::Role'
     Description: Creating service role in IAM for AWS CloudFormation
@@ -434,7 +359,6 @@ Resources:
                       - /*
                 Effect: Allow
               - Action:
-                  - 'codestar:SyncResources'
                   - 'lambda:CreateFunction'
                   - 'lambda:DeleteFunction'
                   - 'lambda:AddPermission'
@@ -546,20 +470,8 @@ Resources:
             - - !Ref ProjectId
               - S3Bucket
           Key: Name
-  SyncResources:
-    DependsOn:
-      - SeedRepo
-      - CodeBuildProject
-      - ProjectPipeline
-      - SyncInitialResources
-    Type: 'AWS::CodeStar::SyncResources'
-    Description: Adding all created resources to your AWS CodeStar project
-    Version: 1
-    Properties:
-      ProjectId: !Ref ProjectId
   ProjectPipeline:
     DependsOn:
-      - SeedRepo
       - LambdaTrustRole
       - CodePipelineTrustRole
       - S3Bucket
@@ -574,14 +486,15 @@ Resources:
       Stages:
         - Actions:
             - ActionTypeId:
-                Owner: AWS
+                Owner: ThirdParty
                 Category: Source
                 Version: 1
-                Provider: CodeCommit
+                Provider: GitHub
               Configuration:
-                PollForSourceChanges: false
-                RepositoryName: !Ref RepositoryName
-                BranchName: master
+                Owner: iph
+                Repo: yocal
+                Branch: master
+                OAuthToken: "abc"
               InputArtifacts: []
               OutputArtifacts:
                 - Name: !Join 
@@ -704,34 +617,6 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
-  SeedRepo:
-    DeletionPolicy: Retain
-    DependsOn:
-      - CodeCommitRepo
-    Type: 'AWS::CodeStar::SeedRepository'
-    Description: >-
-      Adding application source code to the AWS CodeCommit repository for the
-      project
-    Properties:
-      DefaultBranchName: master
-      ProjectId: !Ref ProjectId
-      RepositoryURL: !GetAtt 
-        - CodeCommitRepo
-        - CloneUrlHttp
-      ProjectTemplateId: >-
-        arn:aws:codestar:us-east-2::project-template/codecommit/webapp-goweb-lambda
-      RepositoryProvider: CodeCommit
-  CodeStarProject:
-    Type: 'AWS::CodeStar::Project'
-    Description: Starting project creation
-    Version: 1
-    Properties:
-      ProjectName: !Ref AppName
-      ProjectId: !Ref ProjectId
-      ProjectDescription: AWS CodeStar created project
-      ProjectTemplateId: >-
-        arn:aws:codestar:us-east-2::project-template/codecommit/webapp-goweb-lambda
-      StackId: !Ref 'AWS::StackId'
   WebsiteS3Bucket:
     Condition: CreateWebSiteS3Bucket
     DeletionPolicy: Retain
@@ -754,8 +639,6 @@ Resources:
             - - !Ref ProjectId
               - WebsiteS3Bucket
           Key: Name
-Transform:
-  - 'AWS::CodeStar'
 Conditions:
   CreateWebSiteS3Bucket: !Equals 
     - true
