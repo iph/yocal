@@ -1,16 +1,25 @@
 version: 0.2
 
+env:
+  variables:
+    PROJECT: github.com/iph/yocal
+
 phases:
   install:
     commands:
       - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
       - echo GOPATH - $GOPATH
       - echo GOROOT - $GOROOT
+      - mkdir -P $GOPATH/$PROJECT
+      - cp -R  $CODEBUILD_SRC_DIR/* $GOPATH/$PROJECT
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Go code...
-      - go build -o yocal main.go
+      - go build $PROJECT
+      - ls $GOPATH/$PROJECT
+      - ls $GOROOT
+      - ls $GOROOT/bin
   post_build:
     commands:
       - echo Build completed on `date`
