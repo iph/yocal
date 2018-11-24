@@ -14,15 +14,13 @@ phases:
       - cp -R  $CODEBUILD_SRC_DIR/* /tmp/temp
       - mkdir -p $CODEBUILD_SRC_DIR/$PROJECT
       - cp -R /tmp/temp/* $CODEBUILD_SRC_DIR/$PROJECT
-      - find .
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Go code...
       - go build $PROJECT
-      - ls $CODEBUILD_SRC_DIR/$PROJECT
-      - ls $GOROOT
-      - ls $GOROOT/bin
+      - find $CODEBUILD_SRC_DIR
+      - find $GOPATH
   post_build:
     commands:
       - echo Build completed on `date`
