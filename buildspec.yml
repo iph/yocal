@@ -1,26 +1,21 @@
 version: 0.2
 
-env:
-  variables:
-    PACKAGE: "github.com/iph/yocal"
 phases:
   install:
     commands:
       - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
       - echo GOPATH - $GOPATH
-
-      - echo "Create dir in GOPATH for sources"
-      - mkdir -p ${GOPATH}/src/${PACKAGE}
-
-      - echo Copy source files into GOPATH
-      - echo cp -a ${CODEBUILD_SRC_DIR}/.  ${GOPATH}/src/${PACKAGE}
-      - cp -a ${CODEBUILD_SRC_DIR}/.  ${GOPATH}/src/${PACKAGE}
-
-      - cd ${GOPATH}/src/${PACKAGE} && go get ./...
+      - echo GOROOT - $GOROOT
   build:
     commands:
-      - cd ${GOPATH}/src/${PACKAGE} && go build -o ${CODEBUILD_SRC_DIR}/application
-
+      - echo Build started on `date`
+      - echo Getting packages
+      - go get ./...
+      - echo Compiling the Go code...
+      - go build main.go
+  post_build:
+    commands:
+      - echo Build completed on `date`
 artifacts:
   files:
-    - application
+    - yocal
