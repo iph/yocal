@@ -20,7 +20,7 @@ phases:
       - echo Build started on `date`
       - echo Compiling the Go code...
       - go build $PROJECT
-      - ls $GOPATH/$PROJECT
+      - ls $CODEBUILD_SRC_DIR/$PROJECT
       - ls $GOROOT
       - ls $GOROOT/bin
   post_build:
