@@ -12,6 +12,8 @@ phases:
       - echo GOROOT - $GOROOT
       - mkdir -p $GOPATH/$PROJECT
       - cp -R  $CODEBUILD_SRC_DIR/* $GOPATH/$PROJECT
+      - find .
+      - find $GOPATH
   build:
     commands:
       - echo Build started on `date`
