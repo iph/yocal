@@ -10,7 +10,7 @@ phases:
       - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
       - echo GOPATH - $GOPATH
       - echo GOROOT - $GOROOT
-      - mkdir -P $GOPATH/$PROJECT
+      - mkdir -p $GOPATH/$PROJECT
       - cp -R  $CODEBUILD_SRC_DIR/* $GOPATH/$PROJECT
   build:
     commands:
