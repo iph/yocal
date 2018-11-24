@@ -11,7 +11,7 @@ phases:
       - echo GOPATH - $GOPATH
       - echo GOROOT - $GOROOT
       - mkdir -p $GOPATH/$PROJECT
-      - cp -R  $CODEBUILD_SRC_DIR/* $GOPATH/$PROJECT
+      - cp -R  $CODEBUILD_SRC_DIR/* $GOPATH/src/$PROJECT
       - find .
       - find $GOPATH
   build:
