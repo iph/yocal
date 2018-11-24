@@ -10,7 +10,7 @@ phases:
       - echo CODEBUILD_SRC_DIR - $CODEBUILD_SRC_DIR
       - echo GOPATH - $GOPATH
       - echo GOROOT - $GOROOT
-      - mkdir -p $GOPATH/$PROJECT
+      - mkdir -p $GOPATH/src/$PROJECT
       - cp -R  $CODEBUILD_SRC_DIR/* $GOPATH/src/$PROJECT
       - find .
       - find $GOPATH
