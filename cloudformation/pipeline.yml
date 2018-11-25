@@ -297,10 +297,9 @@ Resources:
               - Action:
                   - 'cloudformation:CreateChangeSet'
                   - 'cloudformation:ExecuteChangeSet'
+                  - 'cloudformation:*'
                 Resource:
-                  - >-
-                    arn:aws:cloudformation:us-east-2:aws:transform/Serverless-2016-10-31
-                  - 'arn:aws:cloudformation:us-east-2:aws:transform/CodeStar'
+                  - '*'
                 Effect: Allow
       AssumeRolePolicyDocument:
         Statement:
