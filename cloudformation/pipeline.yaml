@@ -289,9 +289,7 @@ Resources:
               - Action:
                   - 'iam:PassRole'
                 Resource:
-                  - !GetAtt 
-                    - LambdaTrustRole
-                    - Arn
+                  - '*'
                 Effect: Allow
               - Action:
                   - 'cloudformation:CreateChangeSet'
@@ -437,7 +435,7 @@ Resources:
               OutputArtifacts: []
               RunOrder: 2
               Name: ExecuteChangeSet
-            Name: Deploy
+          Name: Deploy
       RoleArn: !GetAtt
         - CodePipelineTrustRole
         - Arn
