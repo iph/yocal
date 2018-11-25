@@ -411,14 +411,17 @@ Resources:
                 Version: 1
                 Provider: CloudFormation
               Configuration:
-                TemplatePath: 'BuildArtifact::cloudformation/pipeline.yml'
+                TemplatePath: 'BuildArtifact::cloudformation/template-export.yml'
                 ActionMode: CHANGE_SET_REPLACE
                 Capabilities: CAPABILITY_IAM
                 ChangeSetName: pipeline-changeset
                 RoleArn: !GetAtt
                   - CloudFormationTrustRole
                   - Arn
-                StackName: !Ref AWS::StackName
+                StackName: !Join
+                             - '-'
+                             - - !Ref AppName
+                               - 'lambda'
               InputArtifacts:
                 - Name: BuildArtifact
               OutputArtifacts: []
@@ -432,7 +435,10 @@ Resources:
               Configuration:
                 ActionMode: CHANGE_SET_EXECUTE
                 ChangeSetName: pipeline-changeset
-                StackName: !Ref AWS::StackName
+                StackName: !Join
+                             - '-'
+                             - - !Ref AppName
+                               - 'lambda'
               InputArtifacts: []
               OutputArtifacts: []
               RunOrder: 2
