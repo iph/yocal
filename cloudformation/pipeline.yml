@@ -296,6 +296,7 @@ Resources:
                 Effect: Allow
               - Action:
                   - 'cloudformation:CreateChangeSet'
+                  - 'cloudformation:ExecuteChangeSet'
                 Resource:
                   - >-
                     arn:aws:cloudformation:us-east-2:aws:transform/Serverless-2016-10-31
