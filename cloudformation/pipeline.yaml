@@ -404,7 +404,40 @@ Resources:
               RunOrder: 1
               Name: PackageExport
           Name: Build
-
+        - Actions:
+            - ActionTypeId:
+                Owner: AWS
+                Category: Deploy
+                Version: 1
+                Provider: CloudFormation
+              Configuration:
+                TemplatePath: 'BuildArtifact::cloudformation/pipeline.yml'
+                ActionMode: CHANGE_SET_REPLACE
+                Capabilities: CAPABILITY_IAM
+                ChangeSetName: pipeline-changeset
+                RoleArn: !GetAtt
+                  - CloudFormationTrustRole
+                  - Arn
+                StackName: !Ref AWS::StackName
+              InputArtifacts:
+                - Name: BuildArtifact
+              OutputArtifacts: []
+              RunOrder: 1
+              Name: GenerateChangeSet
+            - ActionTypeId:
+                Owner: AWS
+                Category: Deploy
+                Version: 1
+                Provider: CloudFormation
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: pipeline-changeset
+                StackName: !Ref AWS::StackName
+              InputArtifacts: []
+              OutputArtifacts: []
+              RunOrder: 2
+              Name: ExecuteChangeSet
+            Name: Deploy
       RoleArn: !GetAtt
         - CodePipelineTrustRole
         - Arn
