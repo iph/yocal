@@ -4,7 +4,7 @@ Transform:
   - AWS::CodeStar
 
 Parameters:
-  ProjectId:
+  AppName:
     Type: String
     Description: AWS CodeStar projectID used to associate new resources to team members
 

@@ -224,6 +224,9 @@ Resources:
         Type: container
         Image: 'aws/codebuild/golang:1.10'
         ComputeType: small
+        EnvironmentVariables:
+          - Value: !Ref S3Bucket
+            Name: S3_BUCKET
       Source:
         Type: codepipeline
       Name: !Join
