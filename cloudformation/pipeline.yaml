@@ -355,7 +355,6 @@ Resources:
 
   ProjectPipeline:
     DependsOn:
-      - LambdaTrustRole
       - CodePipelineTrustRole
       - S3Bucket
       - CodeBuildProject
