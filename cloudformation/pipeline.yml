@@ -411,9 +411,14 @@ Resources:
                 Version: 1
                 Provider: CloudFormation
               Configuration:
-                TemplatePath: 'BuildArtifact::cloudformation/template-export.yml'
+                TemplatePath: 'BuildArtifact::template-export.yml'
                 ActionMode: CHANGE_SET_REPLACE
                 Capabilities: CAPABILITY_IAM
+                ParameterOverrides: !Join
+                  - ''
+                  - - '{"AppName":"'
+                    - !Ref AppName
+                    - '"}'
                 ChangeSetName: pipeline-changeset
                 RoleArn: !GetAtt
                   - CloudFormationTrustRole
