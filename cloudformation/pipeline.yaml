@@ -340,32 +340,6 @@ Resources:
           - !Ref 'AWS::Region'
           - !Ref 'AWS::AccountId'
           - pipe
-  LambdaTrustRole:
-    Type: 'AWS::IAM::Role'
-    Description: Creating service role in IAM for AWS Lambda
-    Properties:
-      Path: /
-      ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-        - 'arn:aws:iam::aws:policy/service-role/AWSConfigRulesExecutionRole'
-      Policies:
-        - PolicyName: CodeStarLambdaWorkerPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: '*'
-                Effect: Allow
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action: 'sts:AssumeRole'
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
   GithubWebhook:
     Type: 'AWS::CodePipeline::Webhook'
     Properties:
