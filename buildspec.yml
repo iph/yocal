@@ -28,4 +28,4 @@ phases:
 artifacts:
   files:
     - yocal
-    - ./cloudformation/pipeline.yml
+    - cloudformation/**
