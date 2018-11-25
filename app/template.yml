@@ -38,7 +38,7 @@ Resources:
   GetHelloWorld:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: index.get
+      Handler: yocal.main
       Runtime: go1.x
       Role: !GetAtt LambdaTrustRole.Arn
       Events:
