@@ -46,5 +46,8 @@ Resources:
         GetEvent:
           Type: Api
           Properties:
+            BinaryMediaTypes:
+              - image~1png
+              - image~1jpeg
             Path: /
             Method: get
