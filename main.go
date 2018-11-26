@@ -27,7 +27,7 @@ func HandleRequest(ctx context.Context, name events.APIGatewayProxyRequest) (eve
 			Headers: map[string]string{
 				"Content-Type": "image/png",
 			},
-			StatusCode:      200,
+			StatusCode:      500,
 			Body:            enc,
 			IsBase64Encoded: true,
 		}
