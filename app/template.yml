@@ -38,7 +38,7 @@ Resources:
   GetHelloWorld:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../yocal
+      CodeUri: ../yocal.zip
       Handler: yocal.main
       Runtime: go1.x
       Role: !GetAtt LambdaTrustRole.Arn
