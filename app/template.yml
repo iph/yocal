@@ -39,7 +39,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../yocal.zip
-      Handler: yocal.main
+      Handler: yocal
       Runtime: go1.x
       Role: !GetAtt LambdaTrustRole.Arn
       Events:
