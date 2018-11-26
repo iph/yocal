@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"github.com/aws/aws-lambda-go/events/apigwevents"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"image"
 	"image/color"
@@ -12,18 +12,18 @@ import (
 	"math"
 )
 
-func HandleRequest(ctx context.Context, name apigwevents.ApiGatewayProxyRequest) (apigwevents.ApiGatewayProxyResponse, error) {
+func HandleRequest(ctx context.Context, name events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	f, err := genImage()
 
-	var resp apigwevents.ApiGatewayProxyResponse
+	var resp events.APIGatewayProxyResponse
 	if err != nil {
-		resp = apigwevents.ApiGatewayProxyResponse{
+		resp = events.APIGatewayProxyResponse{
 			StatusCode: 500,
 			Body:       err.Error(),
 		}
 	} else {
 		enc := base64.StdEncoding.EncodeToString(f.Bytes())
-		resp = apigwevents.ApiGatewayProxyResponse{
+		resp = events.APIGatewayProxyResponse{
 			Headers: map[string]string{
 				"Content-Type": "image/png",
 			},

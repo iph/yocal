@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/aws/aws-lambda-go/events/apigwevents"
+	"github.com/aws/aws-lambda-go/events"
 	"testing"
 )
 
 func TestHandleRequest(t *testing.T) {
-	resp, err := HandleRequest(nil, apigwevents.ApiGatewayProxyRequest{
+	resp, err := HandleRequest(nil, events.APIGatewayProxyRequest{
 		Path : "/hello/world",
 	})
 
