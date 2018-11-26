@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"image"
 	"image/color"
-	"image/png"
+	"image/jpeg"
 )
 
 func HandleRequest(ctx context.Context, name apigwevents.ApiGatewayProxyRequest) (apigwevents.ApiGatewayProxyResponse, error) {
@@ -24,7 +24,7 @@ func HandleRequest(ctx context.Context, name apigwevents.ApiGatewayProxyRequest)
 		enc := base64.StdEncoding.EncodeToString(f.Bytes())
 		resp = apigwevents.ApiGatewayProxyResponse{
 			Headers: map[string] string {
-				"Content-Type" : "image/png",
+				"Content-Type" : "image/jpeg",
 			},
 			StatusCode: 200,
 			Body: enc,
@@ -42,7 +42,7 @@ func genimage() (*bytes.Buffer, error){
 	img.Set(2, 3, color.RGBA{255, 0, 0, 255})
 	f := &bytes.Buffer{}
 
-	err := png.Encode(f, img)
+	err := jpeg.Encode(f, img, nil)
 
 	return f, err
 }
