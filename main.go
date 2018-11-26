@@ -55,17 +55,15 @@ func genImage() (*bytes.Buffer, error) {
 	r := 40.0
 	θ := 2 * math.Pi / 3
 	cr := &Circle{hw - r*math.Sin(0), hh - r*math.Cos(0), 60}
-	cg := &Circle{hw - r*math.Sin(θ), hh - r*math.Cos(θ), 60}
-	cb := &Circle{hw - r*math.Sin(-θ), hh - r*math.Cos(-θ), 60}
 
 	m := image.NewRGBA(image.Rect(0, 0, w, h))
 	for x := 0; x < w; x++ {
 		for y := 0; y < h; y++ {
 			c := color.RGBA{
-				cr.Brightness(float64(x), float64(y)),
-				cg.Brightness(float64(x), float64(y)),
-				cb.Brightness(float64(x), float64(y)),
-				255,
+				R: cr.Brightness(float64(x), float64(y)),
+				G: 0,
+				B: 0,
+				A: 255,
 			}
 			m.Set(x, y, c)
 		}
