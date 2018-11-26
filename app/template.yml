@@ -4,8 +4,8 @@ Transform:
 Globals:
   Api:
     BinaryMediaTypes:
-      - image/jpeg
-      - image/png
+      - image~1png
+      - image~1jpeg
 
 Parameters:
   AppName:
