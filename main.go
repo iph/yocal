@@ -9,41 +9,70 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math"
 )
 
 func HandleRequest(ctx context.Context, name apigwevents.ApiGatewayProxyRequest) (apigwevents.ApiGatewayProxyResponse, error) {
-	f, err := genimage()
+	f, err := genImage()
 
 	var resp apigwevents.ApiGatewayProxyResponse
 	if err != nil {
 		resp = apigwevents.ApiGatewayProxyResponse{
 			StatusCode: 500,
-			Body: err.Error(),
+			Body:       err.Error(),
 		}
 	} else {
 		enc := base64.StdEncoding.EncodeToString(f.Bytes())
 		resp = apigwevents.ApiGatewayProxyResponse{
-			Headers: map[string] string {
-				"Content-Type" : "image/png",
+			Headers: map[string]string{
+				"Content-Type": "image/png",
 			},
-			StatusCode: 200,
-			Body: enc,
+			StatusCode:      200,
+			Body:            enc,
 			IsBase64Encoded: true,
 		}
 	}
 	return resp, nil
 }
 
-func genimage() (*bytes.Buffer, error){
-	// Create an 100 x 50 image
-	img := image.NewRGBA(image.Rect(0, 0, 100, 50))
+type Circle struct {
+	X, Y, R float64
+}
 
-	// Draw a red dot at (2, 3)
-	img.Set(2, 3, color.RGBA{255, 0, 0, 255})
+func (c *Circle) Brightness(x, y float64) uint8 {
+	var dx, dy float64 = c.X - x, c.Y - y
+	d := math.Sqrt(dx*dx+dy*dy) / c.R
+	if d > 1 {
+		return 0
+	} else {
+		return 255
+	}
+}
+
+func genImage() (*bytes.Buffer, error) {
+	var w, h int = 280, 240
+	var hw, hh float64 = float64(w / 2), float64(h / 2)
+	r := 40.0
+	θ := 2 * math.Pi / 3
+	cr := &Circle{hw - r*math.Sin(0), hh - r*math.Cos(0), 60}
+	cg := &Circle{hw - r*math.Sin(θ), hh - r*math.Cos(θ), 60}
+	cb := &Circle{hw - r*math.Sin(-θ), hh - r*math.Cos(-θ), 60}
+
+	m := image.NewRGBA(image.Rect(0, 0, w, h))
+	for x := 0; x < w; x++ {
+		for y := 0; y < h; y++ {
+			c := color.RGBA{
+				cr.Brightness(float64(x), float64(y)),
+				cg.Brightness(float64(x), float64(y)),
+				cb.Brightness(float64(x), float64(y)),
+				255,
+			}
+			m.Set(x, y, c)
+		}
+	}
+
 	f := &bytes.Buffer{}
-
-	err := png.Encode(f, img)
-
+	err := png.Encode(f, m)
 	return f, err
 }
 
