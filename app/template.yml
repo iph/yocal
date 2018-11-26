@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform:
   - AWS::Serverless-2016-10-31
+Globals:
+  Api:
+    BinaryMediaTypes:
+      - image/jpg
+      - image/png
 
 Parameters:
   AppName:
@@ -46,8 +51,5 @@ Resources:
         GetEvent:
           Type: Api
           Properties:
-            BinaryMediaTypes:
-              - image~1png
-              - image~1jpeg
             Path: /
             Method: get
