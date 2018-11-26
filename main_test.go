@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/aws/aws-lambda-go/events/apigwevents"
 	"testing"
 )
@@ -19,4 +20,6 @@ func TestHandleRequest(t *testing.T) {
 		t.Error("Status code should be 200, is", resp.StatusCode)
 		t.Fail()
 	}
+
+	fmt.Println(resp.Body)
 }

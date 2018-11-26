@@ -28,6 +28,7 @@ func HandleRequest(ctx context.Context, name apigwevents.ApiGatewayProxyRequest)
 			},
 			StatusCode: 200,
 			Body: enc,
+			IsBase64Encoded: true,
 		}
 	}
 	return resp, nil
