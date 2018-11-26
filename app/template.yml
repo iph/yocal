@@ -4,7 +4,7 @@ Transform:
 Globals:
   Api:
     BinaryMediaTypes:
-      - image/jpg
+      - image/jpeg
       - image/png
 
 Parameters:
