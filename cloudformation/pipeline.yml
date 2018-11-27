@@ -19,18 +19,13 @@ Parameters:
     Description: Name of the application.
     MinLength: 1
     MaxLength: 100
-Metadata:
-  CodeBuildImage: 'aws/codebuild/golang:1.10'
-  CodeBuildImageOverride: 'aws/codebuild/golang:1.10'
-  IsWebsite: true
-  WebsiteS3Bucket: !Ref WebsiteS3Bucket
 
 Resources:
   CodeBuildPolicy:
     Type: 'AWS::IAM::Policy'
     Description: Setting IAM policy for service role for Amazon EC2 instances
     Properties:
-      PolicyName: CodeStarWorkerCodeBuildPolicy
+      PolicyName: CodeBuildPolicy
       PolicyDocument:
         Statement:
           - Action:
@@ -233,6 +228,29 @@ Resources:
             - '-'
             - - !Ref AppName
               - 'build'
+  CodeBuildTest:
+    DependsOn:
+      - CodeBuildPolicy
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Artifacts:
+        Type: codepipeline
+        Packaging: zip
+      ServiceRole: !Ref CodeBuildRole
+      Environment:
+        Type: container
+        Image: 'aws/codebuild/golang:1.10'
+        ComputeType: small
+        EnvironmentVariables:
+          - Value: !Ref S3Bucket
+            Name: S3_BUCKET
+      Source:
+        Type: codepipeline
+
+      Name: !Join
+        - '-'
+        - - !Ref AppName
+          - 'test'
   CloudFormationTrustRole:
     Type: 'AWS::IAM::Role'
     Description: Creating service role in IAM for AWS CloudFormation
@@ -308,28 +326,6 @@ Resources:
             Principal:
               Service:
                 - cloudformation.amazonaws.com
-  SourceEventRole:
-    Type: 'AWS::IAM::Role'
-    Description: >-
-      IAM role to allow Amazon CloudWatch Events to trigger AWS CodePipeline execution
-    Properties:
-      Policies:
-        - PolicyName: CodeStarWorkerCloudWatchEventPolicy
-          PolicyDocument:
-            Statement:
-              - Action:
-                  - 'codepipeline:StartPipelineExecution'
-                Resource:
-                  - '*'
-                Effect: Allow
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action: 'sts:AssumeRole'
-            Effect: Allow
-            Principal:
-              Service:
-                - events.amazonaws.com
-            Sid: 1
   S3Bucket:
     DeletionPolicy: Retain
     Type: 'AWS::S3::Bucket'
@@ -337,7 +333,7 @@ Resources:
     Properties:
       BucketName: !Join
         - '-'
-        - - yocal
+        - - !Ref AppName
           - !Ref 'AWS::Region'
           - !Ref 'AWS::AccountId'
           - pipe
@@ -352,7 +348,11 @@ Resources:
       Authentication: GITHUB_HMAC
       TargetPipeline: !Ref ProjectPipeline
       TargetAction: ApplicationSource
-      Name: GithubWebhook
+      Name: !Join
+              - '-'
+              - - !Ref AppName
+                - GithubWebhook
+
       TargetPipelineVersion: !GetAtt ProjectPipeline.Version
       RegisterWithThirdParty: 'true'
 
@@ -377,8 +377,8 @@ Resources:
                 Provider: GitHub
               Configuration:
                 Owner: iph
-                Repo: yocal
-                Branch: master
+                Repo: !Ref RepositoryName
+                Branch: !Ref RepositoryBranch
                 OAuthToken: !Ref OAuthKey
               InputArtifacts: []
               OutputArtifacts:
