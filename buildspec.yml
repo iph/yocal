@@ -22,8 +22,8 @@ phases:
       - echo Build started on `date`
       - echo Compiling the Go code...
       - go build $PROJECT
-      - zip yocal.zip yocal
-      - find .
+      - mv yocal app
+      - zip app.zip app
       - aws cloudformation package --template app/template.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
   post_build:
     commands:

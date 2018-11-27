@@ -10,7 +10,7 @@ Globals:
 Parameters:
   AppName:
     Type: String
-    Description: AWS CodeStar projectID used to associate new resources to team members
+    Description: Name of App
 
 Resources:
   LambdaTrustRole:
@@ -43,8 +43,8 @@ Resources:
   GetHelloWorld:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../yocal.zip
-      Handler: yocal
+      CodeUri: ../app.zip
+      Handler: app
       Runtime: go1.x
       Role: !GetAtt LambdaTrustRole.Arn
       Events:
