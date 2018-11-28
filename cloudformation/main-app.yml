@@ -47,9 +47,6 @@ Resources:
       Handler: app
       Runtime: go1.x
       Role: !GetAtt LambdaTrustRole.Arn
-      AutoPublishAlias: live
-      DeploymentPreference:
-        Type: Linear10PercentEvery1Minute
       Events:
         GetEvent:
           Type: Api
