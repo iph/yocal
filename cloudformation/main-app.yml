@@ -51,6 +51,8 @@ Resources:
       AutoPublishAlias: live
       DeploymentPreference:
         Type: Linear10PercentEvery1Minute
+        Hooks:
+          PreTraffic: !Ref preTrafficHook
       Events:
         GetEvent:
           Type: Api
