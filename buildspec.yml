@@ -24,10 +24,10 @@ phases:
       - go build $PROJECT
       - cd cdeploy
       - go build $PROJECT/cdeploy
-      - mv cdeploy ../
+      - mv cdeploy ../hook
       - cd ..
       - mv yocal app
-      - zip app.zip app cdeploy
+      - zip app.zip app hook
       - aws cloudformation package --template cloudformation/main-app.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
       - aws cloudformation package --template cloudformation/main-app.yml --s3-bucket $S3_BUCKET --output-template template-canary-export.yml
   post_build:

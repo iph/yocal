@@ -62,7 +62,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../app.zip
-      Handler: cdeploy
+      Handler: hook
       Policies:
         - Version: "2012-10-17"
           Statement:
