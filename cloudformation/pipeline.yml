@@ -276,18 +276,7 @@ Resources:
                       - /*
                 Effect: Allow
               - Action:
-                  - 'lambda:CreateFunction'
-                  - 'lambda:DeleteFunction'
-                  - 'lambda:AddPermission'
-                  - 'lambda:UpdateFunction'
-                  - 'lambda:UpdateFunctionCode'
-                  - 'lambda:GetFunction'
-                  - 'lambda:GetFunctionConfiguration'
-                  - 'lambda:UpdateFunctionConfiguration'
-                  - 'lambda:RemovePermission'
-                  - 'lambda:listTags'
-                  - 'lambda:TagResource'
-                  - 'lambda:UntagResource'
+                  - 'lambda:*'
                   - 'apigateway:*'
                   - 'dynamodb:CreateTable'
                   - 'dynamodb:DeleteTable'
@@ -305,6 +294,7 @@ Resources:
                   - 'config:DescribeConfigRules'
                   - 'config:PutConfigRule'
                   - 'config:DeleteConfigRule'
+                  - 'codedeploy:*'
                 Resource: '*'
                 Effect: Allow
               - Action:
