@@ -50,7 +50,7 @@ Resources:
       Role: !GetAtt LambdaTrustRole.Arn
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: LambdaAllAtOnce
+        Type: AllAtOnce
         Hooks:
           PreTraffic: !Ref preTrafficHook
       Events:
