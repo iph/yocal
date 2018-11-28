@@ -22,8 +22,9 @@ phases:
       - echo Build started on `date`
       - echo Compiling the Go code...
       - go build $PROJECT
+      - go build $PROJECT/cdeploy
       - mv yocal app
-      - zip app.zip app
+      - zip app.zip app cdeploy
       - aws cloudformation package --template cloudformation/main-app.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
       - aws cloudformation package --template cloudformation/main-app.yml --s3-bucket $S3_BUCKET --output-template template-canary-export.yml
   post_build:
@@ -31,6 +32,6 @@ phases:
       - echo Build completed on `date`
 artifacts:
   files:
-    - yocal
+    - app.zip
     - template-export.yml
     - template-canary-export.yml

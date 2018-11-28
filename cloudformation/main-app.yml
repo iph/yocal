@@ -6,6 +6,7 @@ Globals:
     BinaryMediaTypes:
       - image~1png
       - image~1jpeg
+      - '*~1*'
 
 Parameters:
   AppName:
@@ -56,3 +57,38 @@ Resources:
           Properties:
             Path: /
             Method: get
+
+  preTrafficHook:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../app.zip
+      Handler: cdeploy
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "codedeploy:PutLifecycleEventHookExecutionStatus"
+                - "lambda:InvokeFunction"
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+                - 'rekognition:*'
+              Resource:
+                '*'
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+              Resource:
+                '*'
+      Runtime: go1.x
+      FunctionName: 'CodeDeployHook_preTrafficHook'
+      DeploymentPreference:
+        Enabled: false
+      Timeout: 30
+      Environment:
+        Variables:
+          NewVersion: !Ref GetHelloWorld.Version
+          REGION: !Ref AWS::Region
+          API_ENDPOINT: !GetAtt GetHelloWorld.Stage
