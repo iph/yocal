@@ -1,30 +1,30 @@
 package main
 
 import (
-	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/codedeploy"
+	lmbda "github.com/aws/aws-sdk-go/service/lambda"
+
 	"github.com/aws/aws-sdk-go/service/rekognition"
-	"io"
-	"net/http"
 	"os"
 )
 
 type CodeDeployLifeCycleInput struct {
-	DeploymentId string `json:"DeploymentId"`
+	DeploymentId                  string `json:"DeploymentId"`
 	LifecycleEventHookExecutionId string `json:"LifecycleEventHookExecutionId"`
 }
 
 func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) error {
 	uriTemplate := "https://%s.execute-api.%s.amazonaws.com/Prod"
 	region := os.Getenv("REGION")
-	apiEndpoint := os.Getenv("API_ENDPOINT")
-	fmt.Println(os.Getenv("NewVersion"))
-	exec := fmt.Sprintf(uriTemplate, apiEndpoint, region)
+	newLambda := os.Getenv("NewVersion")
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
 	})
@@ -33,23 +33,34 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 	}
 
 	cdClient := codedeploy.New(sess)
+	lambClient := lmbda.New(sess)
 
-	client := http.Client{}
-	resp, err := client.Get(exec)
-	var b bytes.Buffer
+	lambdaInput := &lmbda.InvokeInput{
+		FunctionName:   aws.String(newLambda),
+		InvocationType: aws.String(lmbda.InvocationTypeRequestResponse),
+	}
 
-	_, err = io.Copy(&b, resp.Body)
+	resp, err := lambClient.Invoke(lambdaInput)
+
+	var payload events.APIGatewayProxyResponse
+	err = json.Unmarshal(resp.Payload, &payload)
 	if err != nil {
 		sendStatus(cdClient, codedeploy.DeploymentStatusFailed, cdLifeCycle)
 		return err
 	}
 
+	decoded, err := base64.StdEncoding.DecodeString(string(payload.Body))
+
+	if err != nil {
+		sendStatus(cdClient, codedeploy.DeploymentStatusFailed, cdLifeCycle)
+		return err
+	}
 
 	rekClient := rekognition.New(sess)
 
 	input := &rekognition.DetectLabelsInput{
 		Image: &rekognition.Image{
-			Bytes: b.Bytes(),
+			Bytes: decoded,
 		},
 		MaxLabels: aws.Int64(100),
 	}
@@ -74,7 +85,7 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 	return nil
 }
 
-func sendStatus(cdClient *codedeploy.CodeDeploy, status string, input CodeDeployLifeCycleInput)  {
+func sendStatus(cdClient *codedeploy.CodeDeploy, status string, input CodeDeployLifeCycleInput) {
 	cdInput := &codedeploy.PutLifecycleEventHookExecutionStatusInput{
 		LifecycleEventHookExecutionId: aws.String(input.LifecycleEventHookExecutionId),
 		DeploymentId:                  aws.String(input.DeploymentId),
