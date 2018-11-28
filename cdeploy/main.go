@@ -77,6 +77,7 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 	}
 
 	if _, ok := detections["Moon"]; !ok {
+		sendStatus(cdClient, codedeploy.DeploymentStatusFailed, cdLifeCycle)
 		return fmt.Errorf("Canary could not find circle")
 	}
 
