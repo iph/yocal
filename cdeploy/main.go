@@ -92,7 +92,10 @@ func sendStatus(cdClient *codedeploy.CodeDeploy, status string, input CodeDeploy
 	}
 
 	res, err := cdClient.PutLifecycleEventHookExecutionStatus(cdInput)
-	fmt.Println(err.Error())
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	fmt.Println(res.GoString())
 }
 
