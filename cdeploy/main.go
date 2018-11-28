@@ -23,6 +23,7 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 	uriTemplate := "https://%s.execute-api.%s.amazonaws.com/Prod"
 	region := os.Getenv("REGION")
 	apiEndpoint := os.Getenv("API_ENDPOINT")
+	fmt.Println(os.Getenv("NewVersion"))
 
 	exec := fmt.Sprintf(uriTemplate, apiEndpoint, region)
 

@@ -85,4 +85,4 @@ Resources:
         Variables:
           NewVersion: !Ref GetHelloWorld.Version
           REGION: !Ref AWS::Region
-          API_ENDPOINT: !GetAtt GetHelloWorld.Stage
+          API_ENDPOINT: "4n6igpgd86"
