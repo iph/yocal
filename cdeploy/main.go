@@ -22,7 +22,6 @@ type CodeDeployLifeCycleInput struct {
 }
 
 func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) error {
-	uriTemplate := "https://%s.execute-api.%s.amazonaws.com/Prod"
 	region := os.Getenv("REGION")
 	newLambda := os.Getenv("NewVersion")
 	sess, err := session.NewSession(&aws.Config{
