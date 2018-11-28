@@ -91,12 +91,11 @@ func sendStatus(cdClient *codedeploy.CodeDeploy, status string, input CodeDeploy
 		Status:                        aws.String(status),
 	}
 
-	res, err := cdClient.PutLifecycleEventHookExecutionStatus(cdInput)
+	_, err := cdClient.PutLifecycleEventHookExecutionStatus(cdInput)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
-
-	fmt.Println(res.GoString())
 }
 
 func main() {
