@@ -51,6 +51,9 @@ func (c *Circle) Brightness(x, y float64) uint8 {
 
 func genImage() (*bytes.Buffer, error) {
 	var w, h int = 280, 240
+	var hw, hh float64 = float64(w / 2), float64(h / 2)
+	r := 40.0
+	cr := &Circle{hw - r*math.Sin(0), hh - r*math.Cos(0), 60}
 
 	m := image.NewRGBA(image.Rect(0, 0, w, h))
 	for x := 0; x < w; x++ {
@@ -58,7 +61,7 @@ func genImage() (*bytes.Buffer, error) {
 			c := color.RGBA{
 				R: 0,
 				G: 0,
-				B: 0,
+				B: cr.Brightness(float64(x), float64(y)),
 				A: 255,
 			}
 			m.Set(x, y, c)
