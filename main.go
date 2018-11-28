@@ -27,7 +27,7 @@ func HandleRequest(ctx context.Context, name events.APIGatewayProxyRequest) (eve
 			Headers: map[string]string{
 				"Content-Type": "image/png",
 			},
-			StatusCode:      500,
+			StatusCode:      200,
 			Body:            enc,
 			IsBase64Encoded: true,
 		}
@@ -59,9 +59,9 @@ func genImage() (*bytes.Buffer, error) {
 	for x := 0; x < w; x++ {
 		for y := 0; y < h; y++ {
 			c := color.RGBA{
-				R: cr.Brightness(float64(x), float64(y)),
+				R: 0,
 				G: 0,
-				B: 0,
+				B: cr.Brightness(float64(x), float64(y)),
 				A: 255,
 			}
 			m.Set(x, y, c)

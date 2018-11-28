@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  AppName:
+    Type: String
+    Description: Name of App
+  ApplicationEndpoint:
+    Type: String
+
+
+Resources:
+  LambdaCanaryRole:
+    Type: 'AWS::IAM::Role'
+    Description: Creating service role in IAM for AWS Lambda
+    Properties:
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/service-role/AWSConfigRulesExecutionRole'
+      Policies:
+        - PolicyName: LambdaPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'rekognition:*'
+                Resource: '*'
+                Effect: Allow
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+
+  CanaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../app.zip
+      Handler: app
+      Runtime: go1.x
+      Role: !GetAtt LambdaCanaryRole.Arn
+      Environment:
+        REGION: !Ref AWS::Region
+        API_ENDPOINT: !Ref ApplicationEndpoint
