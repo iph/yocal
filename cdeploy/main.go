@@ -24,24 +24,26 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 	region := os.Getenv("REGION")
 	apiEndpoint := os.Getenv("API_ENDPOINT")
 	fmt.Println(os.Getenv("NewVersion"))
-
 	exec := fmt.Sprintf(uriTemplate, apiEndpoint, region)
-
-	client := http.Client{}
-	resp, err := client.Get(exec)
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(region),
+	})
 	if err != nil {
 		return err
 	}
+
+	cdClient := codedeploy.New(sess)
+
+	client := http.Client{}
+	resp, err := client.Get(exec)
 	var b bytes.Buffer
 
 	_, err = io.Copy(&b, resp.Body)
 	if err != nil {
+		sendStatus(cdClient, codedeploy.DeploymentStatusFailed, cdLifeCycle)
 		return err
 	}
 
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(region),
-	})
 
 	rekClient := rekognition.New(sess)
 
@@ -54,6 +56,7 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 	out, err := rekClient.DetectLabels(input)
 
 	if err != nil {
+		sendStatus(cdClient, codedeploy.DeploymentStatusFailed, cdLifeCycle)
 		return err
 	}
 
@@ -67,24 +70,20 @@ func HandleRequest(ctx context.Context, cdLifeCycle CodeDeployLifeCycleInput) er
 		return fmt.Errorf("Canary could not find circle")
 	}
 
-	cdClient := codedeploy.New(sess)
+	sendStatus(cdClient, codedeploy.DeploymentStatusSucceeded, cdLifeCycle)
+	return nil
+}
 
+func sendStatus(cdClient *codedeploy.CodeDeploy, status string, input CodeDeployLifeCycleInput)  {
 	cdInput := &codedeploy.PutLifecycleEventHookExecutionStatusInput{
-		LifecycleEventHookExecutionId: aws.String(cdLifeCycle.LifecycleEventHookExecutionId),
-		DeploymentId:                  aws.String(cdLifeCycle.DeploymentId),
-		Status:                        aws.String(codedeploy.DeploymentStatusFailed),
+		LifecycleEventHookExecutionId: aws.String(input.LifecycleEventHookExecutionId),
+		DeploymentId:                  aws.String(input.DeploymentId),
+		Status:                        aws.String(status),
 	}
 
 	res, err := cdClient.PutLifecycleEventHookExecutionStatus(cdInput)
-
-	if err != nil {
-		fmt.Println(err)
-
-		return err
-	}
+	fmt.Println(err.Error())
 	fmt.Println(res.GoString())
-	return nil
-
 }
 
 func main() {
