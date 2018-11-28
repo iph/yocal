@@ -42,10 +42,11 @@ Resources:
   CanaryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../app.zip
-      Handler: app
+      CodeUri: ./canaryapp.zip
+      Handler: canaryapp
       Runtime: go1.x
       Role: !GetAtt LambdaCanaryRole.Arn
       Environment:
-        REGION: !Ref AWS::Region
-        API_ENDPOINT: !Ref ApplicationEndpoint
+        Variables:
+          REGION: !Ref AWS::Region
+          API_ENDPOINT: !Ref ApplicationEndpoint

@@ -53,7 +53,7 @@ func HandleRequest(ctx context.Context, name events.APIGatewayProxyRequest) erro
 	}
 
 	for _, label := range out.Labels {
-		fmt.Println(label.Name, label.Confidence)
+		fmt.Println(*label.Name, *label.Confidence)
 	}
 
 	return nil
