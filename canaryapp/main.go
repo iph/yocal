@@ -52,8 +52,14 @@ func HandleRequest(ctx context.Context, name events.APIGatewayProxyRequest) erro
 		return err
 	}
 
+	detections := map[string]bool{}
 	for _, label := range out.Labels {
 		fmt.Println(*label.Name, *label.Confidence)
+		detections[*label.Name] = true
+	}
+
+	if _, ok := detections["Moon"]; !ok {
+		return fmt.Errorf("Canary could not find circle")
 	}
 
 	return nil
