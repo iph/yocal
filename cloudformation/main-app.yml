@@ -20,7 +20,6 @@ Resources:
       Path: /
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-        - 'arn:aws:iam::aws:policy/service-role/AWSConfigRulesExecutionRole'
       Policies:
         - PolicyName: LambdaPolicy
           PolicyDocument:
@@ -30,6 +29,7 @@ Resources:
                   - 'logs:CreateLogGroup'
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
+                  - 'xray:*'
                 Resource: '*'
                 Effect: Allow
       AssumeRolePolicyDocument:
