@@ -12,6 +12,7 @@ import (
 	"math"
 )
 
+// comment
 func HandleRequest(ctx context.Context, name events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	f, err := genImage()
 
